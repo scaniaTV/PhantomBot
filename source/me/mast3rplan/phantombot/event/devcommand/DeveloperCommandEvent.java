@@ -31,14 +31,6 @@ public class DeveloperCommandEvent extends Event {
     private String command;
     private String[] args;
 
-    /**
-     * @function DeveloperCommandEvent
-     *
-     * @usage Used to send command events
-     * @param {string} sender
-     * @param {string} command
-     * @param {string} arguments
-     */
     public DeveloperCommandEvent(String sender, String command, String arguments, String id) {
         this.sender = sender;
         this.command = command;
@@ -48,11 +40,6 @@ public class DeveloperCommandEvent extends Event {
         parse();
     }
 
-    /** 
-     * @function parse
-     *
-     * @usage Used to parse the command arguments
-     */
     private void parse() {
         List<String> tmpArgs = new LinkedList<>();
         boolean inquote = false;
@@ -80,72 +67,30 @@ public class DeveloperCommandEvent extends Event {
         }
     }
 
-    /** 
-     * @function getSender
-     *
-     * @usage Used to get the username who sent the command
-     * @return {string} sender
-     */
     public String getSender() {
         return sender;
     }
 
-    /** 
-     * @function getCommand
-     *
-     * @usage Used to get the command that was used
-     * @return {string} command
-     */
     public String getCommand() {
         return command.toLowerCase();
     }
 
-    /** 
-     * @function getArgs
-     *
-     * @usage Used to get all the command arguments
-     * @return {string array} args
-     */
     public String[] getArgs() {
         return args;
     }
 
-    /** 
-     * @function getArguments
-     *
-     * @usage Used to get the entire string of arguments
-     * @return {string} arguments
-     */
     public String getArguments() {
         return arguments;
     }
 
-    /** 
-     * @function getTags
-     *
-     * @usage Used to get the IRCv3 tags
-     * @return {map string} tags
-     */
     public Map<String, String> getTags() {
         return tags;
     }
 
-    /** 
-     * @function getId
-     *
-     * @usage Used to get the developer id
-     * @return {String} id
-     */
     public String getId() {
         return id;
     }
 
-    /** 
-     * @function toEventSocket
-     *
-     * @usage Used to get the command information that is available 
-     * @return {string} sender|command|arguments|channel
-     */
     public String toEventSocket() {
         return (this.getSender() + "|" + this.getCommand() + "|" + this.getArguments());
     }
