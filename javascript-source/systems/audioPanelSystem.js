@@ -100,7 +100,7 @@
             actionArgs = args[3],
             audioHook = args[1],
             audioHookListStr,
-            isModv3 = $.isModv3(sender, event.getTags());
+            isMod = $.isMod(sender, event.getTags());
 
         /* Control Panel call to update the Audio Hooks DB. */
         if (command.equalsIgnoreCase('reloadaudiopanelhooks')) {
@@ -143,25 +143,25 @@
 
             if (subCommand === undefined) {
                 $.say($.whisperPrefix(sender) + $.lang.get('audiohook.usage'));
-                $.returnCommandCost(sender, command, $.isModv3(sender, event.getTags()));
+                $.returnCommandCost(sender, command, $.isMod(sender, event.getTags()));
                 return;
             }
 
             if (subCommand.equalsIgnoreCase('play')) {
                 if (audioHook === undefined) {
                     $.say($.whisperPrefix(sender) + $.lang.get('audiohook.play.usage'));
-                    $.returnCommandCost(sender, command, $.isModv3(sender, event.getTags()));
+                    $.returnCommandCost(sender, command, $.isMod(sender, event.getTags()));
                     return;
                 }
 
                 if (!audioHookExists(audioHook)) {
-                    $.returnCommandCost(sender, command, $.isModv3(sender, event.getTags()));
+                    $.returnCommandCost(sender, command, $.isMod(sender, event.getTags()));
                     return;
                 }
 
                 // Moved this from init since only this command can have three commands. Why slow down all of the command with 
                 // 3 db calls just for this?
-                if ((((isModv3 && $.getIniDbBoolean('settings', 'pricecomMods', false) && !$.isBot(sender)) || !isModv3)) && $.bot.isModuleEnabled('./systems/pointSystem.js')) {
+                if ((((isMod && $.getIniDbBoolean('settings', 'pricecomMods', false) && !$.isBot(sender)) || !isMod)) && $.bot.isModuleEnabled('./systems/pointSystem.js')) {
                     var commandCost = $.getCommandPrice(command, subCommand, action);
                     if ($.getUserPoints(sender) < commandCost) {
                         $.say($.whisperPrefix(sender) + $.lang.get('cmd.needpoints', $.getPointsString(commandCost)));

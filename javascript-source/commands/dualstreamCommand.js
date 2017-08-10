@@ -42,7 +42,7 @@
                 if (!otherChannels.equals('Channel-1 Channel-2')) {
                     $.say($.lang.get('dualstreamcommand.link') + $.username.resolve($.channelName) + '/' +  otherChannels.split(' ').join('/'));
                 } else {
-                    if ($.isModv3(sender, event.getTags())) {
+                    if ($.isMod(sender, event.getTags())) {
                         $.say($.whisperPrefix(sender) + $.lang.get('dualstreamcommand.usage'));
                     }
                 }

@@ -80,6 +80,7 @@ import tv.phantombot.cache.TipeeeStreamCache;
 import tv.phantombot.cache.TwitchCache;
 import tv.phantombot.cache.TwitterCache;
 import tv.phantombot.cache.UsernameCache;
+import tv.phantombot.cache.ViewerListCache;
 import tv.phantombot.console.ConsoleInputListener;
 import tv.phantombot.event.EventBus;
 import tv.phantombot.event.Listener;
@@ -205,6 +206,7 @@ public final class PhantomBot implements Listener {
     private TwitchCache twitchCache;
     private UsernameCache usernameCache;
     private TipeeeStreamCache tipeeeStreamCache;
+    private ViewerListCache viewerListCache;
     public static String twitchCacheReady = "false";
 
     /* Socket Servers */
@@ -1132,6 +1134,8 @@ public final class PhantomBot implements Listener {
         DonationsCache.killall();
         print("Terminating the StreamTip cache...");
         StreamTipCache.killall();
+        print("Terminating the ViewerListCache cache...");
+        viewerListCache.kill();
 
         print("Terminating pending timers...");
         ScriptApi.instance().kill();
@@ -1206,6 +1210,7 @@ public final class PhantomBot implements Listener {
         this.twitchCache = TwitchCache.instance(this.chanName);
         this.emotesCache = EmotesCache.instance(this.chanName);
         this.followersCache = FollowersCache.instance(this.chanName);
+        this.viewerListCache = ViewerListCache.instance(this.chanName);
         
         /* Start the donations cache if the keys are not null and the module is enabled */
         if (this.twitchAlertsKey != null && !this.twitchAlertsKey.isEmpty() && checkModuleEnabled("./handlers/donationHandler.js")) {
@@ -1236,6 +1241,7 @@ public final class PhantomBot implements Listener {
         Script.global.defineProperty("twitchcache", this.twitchCache, 0);
         Script.global.defineProperty("emotes", this.emotesCache, 0);
         Script.global.defineProperty("session", this.session, 0);
+        Script.global.defineProperty("usernameCache", this.viewerListCache, 0);
     }
 
     /*

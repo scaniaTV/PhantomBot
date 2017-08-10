@@ -133,6 +133,8 @@
      */
     function runPointsPayout() {
         var now = $.systemTime(),
+            isOnline = $.isOnline($.channelName),
+            users = Object.keys($.users),
             uUsers = [],
             username,
             amount,
@@ -142,7 +144,7 @@
             return;
         }
 
-        if ($.isOnline($.channelName)) {
+        if (isOnline) {
             if (onlinePayoutInterval > 0 && (lastPayout + (onlinePayoutInterval * 6e4)) <= now) {
                 amount = onlineGain;
             } else {
@@ -157,9 +159,9 @@
         }
 
         $.inidb.setAutoCommit(false);
-        for (i in $.users) {
-            username = $.users[i][0].toLowerCase();
-            if ($.isOnline($.channelName)) {
+        for (i in users) {
+            username = users[i].toLowerCase();
+            if (isOnline) {
                 if ($.isMod(username) && $.isSub(username) || $.isAdmin(username) && $.isSub(username)) {
                     if (parseInt($.inidb.get('grouppoints', 'Subscriber')) > 0) {
                         amount = parseInt($.inidb.get('grouppoints', 'Subscriber'));
@@ -296,9 +298,10 @@
             return;
         }
 
+        var users = Object.keys($.users);
         $.inidb.setAutoCommit(false);
-        for (i in $.users) {
-            $.inidb.incr('points', $.users[i][0].toLowerCase(), amount);
+        for (i in users) {
+            $.inidb.incr('points', users[i].toLowerCase(), amount);
         }
         $.inidb.setAutoCommit(true);
 
@@ -315,10 +318,11 @@
             return;
         }
 
+        var users = Object.keys($.users);
         $.inidb.setAutoCommit(false);
-        for (i in $.users) {
-            if (getUserPoints($.users[i][0].toLowerCase()) > amount) {
-                $.inidb.decr('points', $.users[i][0].toLowerCase(), amount);
+        for (i in users) {
+            if (getUserPoints(users[i].toLowerCase()) > amount) {
+                $.inidb.decr('points', users[i].toLowerCase(), amount);
             }
         }
         $.inidb.setAutoCommit(true);
@@ -712,12 +716,13 @@
                 return;
             }
 
-            for (i in $.users) {
+            var users = Object.keys($.users);
+            for (i in users) {
                 do {
                     amount = $.randRange(1, action);
                 } while (amount == lastAmount);
                 totalAmount += amount;
-                $.inidb.incr('points', $.users[i][0].toLowerCase(), amount);
+                $.inidb.incr('points', users[i].toLowerCase(), amount);
             }
 
             if (totalAmount > 0) {

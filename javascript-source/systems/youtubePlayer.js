@@ -1676,7 +1676,7 @@
 
             if (args.length == 0) {
                 $.say($.whisperPrefix(sender) + $.lang.get('ytplayer.command.songrequest.usage'));
-                $.returnCommandCost(sender, command, $.isModv3(sender, event.getTags()));
+                $.returnCommandCost(sender, command, $.isMod(sender, event.getTags()));
                 return;
             }
 

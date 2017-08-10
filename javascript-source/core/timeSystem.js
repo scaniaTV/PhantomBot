@@ -358,8 +358,9 @@
 
         if ($.isOnline($.channelName) || keepTimeWhenOffline) {
             $.inidb.setAutoCommit(false);
-            for (i in $.users) {
-                username = $.users[i][0].toLowerCase();
+            var users = Object.keys($.users);
+            for (i in users) {
+                username = users[i].toLowerCase();
                 $.inidb.incr('time', username, 60);
             }
             $.inidb.setAutoCommit(true);
@@ -369,11 +370,12 @@
     // Interval for auto level to regular
     inter = setInterval(function() {
         var username, 
+            users = Object.keys($.users),
             i;
             
         if (levelWithTime) {
-            for (i in $.users) {
-                username = $.users[i][0].toLowerCase();
+            for (i in users) {
+                username = users[i].toLowerCase();
                 if (!$.isMod(username) && !$.isAdmin(username) && !$.isSub(username) && $.inidb.exists('time', username) && Math.floor(parseInt($.inidb.get('time', username)) / 3600) >= hoursForLevelUp &&  parseInt($.getUserGroupId(username)) > regularsGroupId) {
                     if (!$.hasModList(username)) { // Added a second check here to be 100% sure the user is not a mod.
                         $.setUserGroupById(username, regularsGroupId);

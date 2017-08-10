@@ -261,7 +261,7 @@
         }
 
         /* Check if the user is a subscriber */
-        if (subscribers && !$.isSubv3(username, tags)) {
+        if (subscribers && !$.isSub(username, tags)) {
             message(username, $.lang.get('rafflesystem.enter.subscriber'));
             return;
         }
@@ -293,7 +293,7 @@
         /* Push the user into the array */
         entered[username] = true;
         entries.push(username);
-        if (subscriberBonus > 0 && $.isSubv3(username, tags)) {
+        if (subscriberBonus > 0 && $.isSub(username, tags)) {
             for (var i = 0; i < subscriberBonus; i++) {
                 entries.push(username);
             }

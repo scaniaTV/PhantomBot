@@ -69,7 +69,7 @@
                 return;
             }
 
-            if ($.inidb.exists('pricekey', key) && ((($.isMod(event.getSender()) && $.getIniDbBoolean('settings', 'pricecomMods', false) && !$.isBot(event.getSender())) || !$.isModv3(event.getSender(), event.getTags())))) {
+            if ($.inidb.exists('pricekey', key) && ((($.isMod(event.getSender()) && $.getIniDbBoolean('settings', 'pricecomMods', false) && !$.isBot(event.getSender())) || !$.isMod(event.getSender(), event.getTags())))) {
                 if ($.getUserPoints(event.getSender()) < $.inidb.get('pricekey', key)) {
                     return;
                 }

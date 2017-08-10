@@ -10,7 +10,8 @@
         tierUpMessage = $.getSetIniDbString('gameWispSubHandler', 'tierUpMessage', '(name) upgraded to tier (tier) on GameWisp!');
         subShowMessages = $.getSetIniDbBoolean('gameWispSubHandler', 'subscriberShowMessages', true),
         subReward = $.getSetIniDbNumber('gameWispSubHandler', 'subscribeReward', 0),
-        reSubReward = $.getSetIniDbNumber('gameWispSubHandler', 'reSubscribeReward', 0);
+        reSubReward = $.getSetIniDbNumber('gameWispSubHandler', 'reSubscribeReward', 0),
+        gwUsers = [];
 
     /*
      * The tierData primary key needs to match the subcommand for !gamewisptier.  See notes below 
@@ -88,16 +89,12 @@
      * @event gameWispChange
      */
     $.bind('gameWispChange', function(event) {
-        if (!$.bot.isModuleEnabled('./handlers/gameWispHandler.js')) {
-            return;
-        }
-
         var username = event.getUsername().toLowerCase(),
             userstatus = event.getStatus();
 
         if (userstatus.equals('inactive')) {
-            $.delGWSubUsersList(username);
-            $.restoreSubscriberStatus(username, false);
+            delGWSubUsersList(username);
+            $.setUserGroupByIdIfNotMod(subscriber, 7);
         }
     });
 
@@ -105,17 +102,13 @@
      * @event gameWispBenefits
      */
     $.bind('gameWispBenefits', function(event) {
-        if (!$.bot.isModuleEnabled('./handlers/gameWispHandler.js')) {
-            return;
-        }
-
         var username = event.getUsername().toLowerCase(),
             resolvename = $.resolveRank(username),
             tier = parseInt(event.getTier());
 
-        if (tier > $.getGWTier(username)) {
-            $.addGWSubUsersList(username, tier);
-            $.restoreSubscriberStatus(username, false);
+        if (tier > getGWTier(username)) {
+            addGWSubUsersList(username, tier);
+            $.setUserGroupByIdIfNotMod(subscriber, 3);
             if (subShowMessages) {
                 $.say(tierUpMessage.replace('(name)', resolvename).replace('(tier)', tier));
             }
@@ -126,17 +119,13 @@
      * @event gameWispSubscribe
      */
     $.bind('gameWispSubscribe', function(event) {
-        if (!$.bot.isModuleEnabled('./handlers/gameWispHandler.js')) {
-            return;
-        }
         var username = event.getUsername().toLowerCase(),
             resolvename = $.resolveRank(username),
             tier = parseInt(event.getTier()),
             userreward = subReward + tierData['subbonuspoints'][tier];
 
-        $.addGWSubUsersList(username, tier);
-        $.restoreSubscriberStatus(username, false);
-
+        addGWSubUsersList(username, tier);
+        $.setUserGroupByIdIfNotMod(subscriber, 3);
         if (subShowMessages) {
             $.inidb.incr('points', username, userreward);
             $.say(subMessage.replace('(name)', resolvename).replace('(tier)', tier.toString()).replace('(reward)', userreward.toString()));
@@ -149,13 +138,10 @@
      * @event gameWispAnniversary
      */
     $.bind('gameWispAnniversary', function(event) {
-        if (!$.bot.isModuleEnabled('./handlers/gameWispHandler.js')) {
-            return;
-        }
         var username = event.getUsername().toLowerCase(),
             resolvename = $.resolveRank(username),
             months = parseInt(event.getMonths()),
-            tier = $.getGWTier(username),
+            tier = getGWTier(username),
             userreward = subReward + tierData['subbonuspoints'][tier];
 
         if (subShowMessages) {
@@ -165,6 +151,39 @@
         $.writeToFile(username + ' ', './addons/gameWispHandler/latestResub.txt', false);
         $.writeToFile(username + ' ', './addons/gameWispHandler/latestSubOrResub.txt', false);
     });
+
+    /*
+     * @function addGWSubUsersList
+     * @param {String}
+     * @param {String}
+     */
+    function addGWSubUsersList(username, tier) {
+        $.setIniDbBoolean('gamewispsubs', username, true);
+        $.inidb.set('gamewispsubs', username + '_tier', tier);
+        gwUsers[username] = tier;
+    }
+
+    /*
+     * @function delGWSubUsersList
+     * @param {String}
+     */
+    function delGWSubUsersList(username) {
+        $.setIniDbBoolean('gamewispsubs', username, false);
+        $.inidb.set('gamewispsubs', username + '_tier', 1);
+        delete gwUsers[username];
+    }
+
+    /**
+     * @function getGWTier
+     * @export $
+     * @param username
+     */
+    function getGWTier(username) {
+        if (username.toLowerCase() in gwUsers) {
+            return gwUsers[username];
+        }
+        return 0;
+    }
 
     /**
      * @function checkGameWispSub
@@ -201,34 +220,34 @@
         if (jsonData['result']['status'] != 1) {
             $.consoleDebug('checkGameWispSub(' + username + '): status != 1');
             if ($.getIniDbBoolean('gamewispsubs', username, false)) {
-                $.addGWSubUsersList($.users[i][0], $.getIniDbNumber('gamewispsubs', username + '_tier', 1));
+                addGWSubUsersList($.users[i], $.getIniDbNumber('gamewispsubs', username + '_tier', 1));
             }
             return;
         }
         if (jsonData['data'][0] == undefined) {
             $.consoleDebug('checkGameWispSub(' + username + '): data is undefined');
             if ($.getIniDbBoolean('gamewispsubs', username, false)) {
-                $.addGWSubUsersList($.users[i][0], $.getIniDbNumber('gamewispsubs', username + '_tier', 1));
+                addGWSubUsersList($.users[i], $.getIniDbNumber('gamewispsubs', username + '_tier', 1));
             }
             return;
         }
         if (jsonData['data'][0]['status'] == undefined) {
             $.consoleDebug('checkGameWispSub(' + username + '): status is undefined');
             if ($.getIniDbBoolean('gamewispsubs', username, false)) {
-                $.addGWSubUsersList($.users[i][0], $.getIniDbNumber('gamewispsubs', username + '_tier', 1));
+                addGWSubUsersList($.users[i], $.getIniDbNumber('gamewispsubs', username + '_tier', 1));
             }
             return;
         }
 
         if (jsonData['data'][0]['status'].equals('inactive')) {
             $.consoleDebug('checkGameWispSub(' + username + '): inactive account');
-            $.delGWSubUsersList(username);
-            $.restoreSubscriberStatus(username, false);
+            delGWSubUsersList(username);
+            $.setUserGroupByIdIfNotMod(subscriber, 7);
         } else {
             $.consoleDebug('checkGameWispSub(' + username + '): adding to sub users list');
-            $.addGWSubUsersList(username, parseInt(jsonData['data'][0]['tier']['data']['level']));
+            addGWSubUsersList(username, parseInt(jsonData['data'][0]['tier']['data']['level']));
             $.consoleDebug('checkGameWispSub(' + username + '): calling DB update; mods are ignored');
-            $.restoreSubscriberStatus(username, false);
+            $.setUserGroupByIdIfNotMod(subscriber, 3);
             $.consoleDebug('checkGameWispSub(' + username + '): handler complete');
         }
     }
@@ -240,7 +259,7 @@
      * @return {Number}
      */
     function getTierData(username, tierKey) {
-        var tier = $.getGWTier(username.toLowerCase());
+        var tier = getGWTier(username.toLowerCase());
         return tierData[tierKey][tier];
     }
 
@@ -426,4 +445,7 @@
     $.getTierData = getTierData;
     $.checkGameWispSub = checkGameWispSub;
     $.updateGameWispDB = updateGameWispDB;
+    $.addGWSubUsersList = addGWSubUsersList;
+    $.delGWSubUsersList = delGWSubUsersList;
+    $.getGWTier = getGWTier;
 })();

@@ -70,7 +70,7 @@
                     random = $.randRange(1, responseCounts.lost);
                 } while (random == lastRandom);
                 $.say($.lang.get('roulette.lost.' + random, $.resolveRank(sender)));
-                if (!$.isModv3(sender, event.getTags())) {
+                if (!$.isMod(sender, event.getTags())) {
                     if ($.getBotWhisperMode()) {
                         $.say($.whisperPrefix(sender) + $.lang.get('roulette.timeout.notifyuser', timeoutTime));
                     }

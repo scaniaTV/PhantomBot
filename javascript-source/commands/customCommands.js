@@ -60,7 +60,7 @@
      * @return {string}
      */
     function tags(event, message, atEnabled) {
-        if (atEnabled && event.getArgs()[0] !== undefined && $.isModv3(event.getSender(), event.getTags())) {
+        if (atEnabled && event.getArgs()[0] !== undefined && $.isMod(event.getSender(), event.getTags())) {
             if (!message.match(tagCheck)) {
                 return event.getArgs()[0] + ' -> ' + message;
             }
@@ -144,7 +144,7 @@
 
         if (message.match(/\(onlineonly\)/g)) {
             if (!$.isOnline($.channelName)) {
-                returnCommandCost(event.getSender(), event.getCommand(), $.isModv3(event.getSender(), event.getTags()));
+                returnCommandCost(event.getSender(), event.getCommand(), $.isMod(event.getSender(), event.getTags()));
                 return null;
             }
             message = $.replace(message, '(onlineonly)', '');
@@ -152,7 +152,7 @@
 
         if (message.match(/\(offlineonly\)/g)) {
             if ($.isOnline($.channelName)) {
-                returnCommandCost(event.getSender(), event.getCommand(), $.isModv3(event.getSender(), event.getTags()));
+                returnCommandCost(event.getSender(), event.getCommand(), $.isMod(event.getSender(), event.getTags()));
                 return null;
             }
             message = $.replace(message, '(offlineonly)', '');

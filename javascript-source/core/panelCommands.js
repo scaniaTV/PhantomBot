@@ -362,8 +362,10 @@
             if (!$.isBot(sender)) {
                 return;
             }
-            for (var i in $.users) {
-                $.inidb.incr('points', $.users[i][0].toLowerCase(), parseInt(action));
+            var keys = Object.keys($.users);
+
+            for (var i in keys) {
+                $.inidb.incr('points', keys[i].toLowerCase(), parseInt(action));
             }
             return;
         }
@@ -375,9 +377,11 @@
             if (!$.isBot(sender)) {
                 return;
             }
-            for (var i in $.users) {
-                if ($.getUserPoints($.users[i][0].toLowerCase()) > parseInt(action)) {
-                    $.inidb.decr('points', $.users[i][0].toLowerCase(), parseInt(action));
+            var keys = Object.keys($.users);
+            
+            for (var i in keys) {
+                if ($.getUserPoints(keys[i].toLowerCase()) > parseInt(action)) {
+                    $.inidb.decr('points', keys[i].toLowerCase(), parseInt(action));
                 }
             }
             return;

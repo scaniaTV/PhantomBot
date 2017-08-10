@@ -52,8 +52,7 @@
                 message = $.replace(message, '(plan)', event.getPlan());
             }
             $.say(message);
-            $.addSubUsersList(subscriber);
-            $.restoreSubscriberStatus(subscriber, true);
+            $.setUserGroupByIdIfNotMod(subscriber, 3);
             $.writeToFile(subscriber + ' ', './addons/subscribeHandler/latestSub.txt', false);
             $.inidb.set('streamInfo', 'lastSub', subscriber);
             if (subReward > 0) {
@@ -77,8 +76,7 @@
                 message = $.replace(message, '(reward)', String(subReward));
             }
             $.say(message);
-            $.addSubUsersList(subscriber);
-            $.restoreSubscriberStatus(subscriber, true);
+            $.setUserGroupByIdIfNotMod(subscriber, 3);
             $.writeToFile(subscriber + ' ', './addons/subscribeHandler/latestSub.txt', false);
             $.inidb.set('streamInfo', 'lastSub', subscriber);
             if (subReward > 0) {
@@ -114,8 +112,7 @@
                 message = $.replace(message, '(customemote)', emotes.join(' '));
             }
             $.say(message);
-            $.addSubUsersList(resubscriber);
-            $.restoreSubscriberStatus(resubscriber, true);
+            $.setUserGroupByIdIfNotMod(subscriber, 3);
             $.writeToFile(resubscriber + ' ', './addons/subscribeHandler/latestResub.txt', false);
             $.writeToFile(resubscriber + ': ' + months + ' ', './addons/subscribeHandler/latestResub&Months.txt', false);
             $.inidb.set('streamInfo', 'lastReSub', resubscriber);
