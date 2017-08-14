@@ -314,10 +314,10 @@
      * @param {string} reason
      */
     function timeoutUserFor(username, time, reason) {
-        $.timeoutUserReason(username, time, reason);
+        $.session.sayNow('.timeout ' + username + ' ' + time + ' ' + reason);
         var timeout = setTimeout(function() {
-            if ($.getMessageWrites() < 7) {
-                $.timeoutUserReason(username, time, reason);
+            if ($.getMessageWrites() < 50) {
+                $.session.sayNow('.timeout ' + username + ' ' + time + ' ' + reason);
             }
             clearInterval(timeout);
         }, 1000, 'scripts::core::chatModerator.js::timeout');
@@ -355,8 +355,8 @@
      * @param {boolean} filter
      */
     function sendMessage(username, message, filter) {
-        if (filter == false && messageTime < $.systemTime() && $.getMessageQueue() === 0 && $.getMessageWrites() < 7) {
-            $.say('@' + username + ', ' + message + ' ' + warning);
+        if (filter == false && messageTime < $.systemTime() && $.getMessageWrites() < 7) {
+            $.session.sayNow('@' + username + ', ' + message + ' ' + warning);
             messageTime = ((msgCooldownSec * 1000) + $.systemTime());
         }
     }
@@ -409,7 +409,7 @@
         for (i in blackList) {
             if (blackList[i].isRegex) {
                 if (blackList[i].phrase.test(message)) {
-                    if (blackList[i].excludeRegulars && $.isReg(sender) || blackList[i].excludeSubscribers && $.isSub(sender, event.getTags())) {
+                    if (blackList[i].excludeRegulars && $.isReg(sender) || blackList[i].excludeSubscribers && $.isSubv3(sender, event.getTags())) {
                         return false;
                     }
                     timeoutUserFor(sender, blackList[i].timeout, blackList[i].banReason);
@@ -419,7 +419,7 @@
                 }
             } else {
                 if (message.indexOf(blackList[i].phrase) !== -1) {
-                    if (blackList[i].excludeRegulars && $.isReg(sender) || blackList[i].excludeSubscribers && $.isSub(sender, event.getTags())) {
+                    if (blackList[i].excludeRegulars && $.isReg(sender) || blackList[i].excludeSubscribers && $.isSubv3(sender, event.getTags())) {
                         return false;
                     }
                     timeoutUserFor(sender, blackList[i].timeout, blackList[i].banReason);
@@ -466,7 +466,7 @@
             message = event.getMessage().toLowerCase(),
             messageLength = message.length();
 
-        if (!$.isMod(sender, event.getTags())) {
+        if (!$.isModv3(sender, event.getTags())) {
             // Blacklist
             if (checkBlackList(sender, event, message)) {
                 return;
@@ -476,7 +476,7 @@
             if (linksToggle && $.patternDetector.hasLinks(event)) {
                 if (checkYoutubePlayer(message) || checkPermitList(sender) || checkWhiteList(message)) {
                     return;
-                } else if (!regulars.Links && $.isReg(sender) || !subscribers.Links && $.isSub(sender, event.getTags())) {
+                } else if (!regulars.Links && $.isReg(sender) || !subscribers.Links && $.isSubv3(sender, event.getTags())) {
                     return;
                 }
 
@@ -489,7 +489,7 @@
             // Symbol filter
             if (symbolsToggle && messageLength >= symbolsTriggerLength) {
                 if ($.patternDetector.getLongestNonLetterSequence(event) >= symbolsGroupLimit || (($.patternDetector.getNumberOfNonLetters(event) / messageLength) * 100) >= symbolsLimitPercent) {
-                    if (!regulars.Symbols && $.isReg(sender) || !subscribers.Symbols && $.isSub(sender, event.getTags())) {
+                    if (!regulars.Symbols && $.isReg(sender) || !subscribers.Symbols && $.isSubv3(sender, event.getTags())) {
                         return;
                     }
 
@@ -501,7 +501,7 @@
 
             // Spam filter
             if (spamToggle && $.patternDetector.getLongestRepeatedSequence(event) >= spamLimit) {
-                if (!regulars.Spam && $.isReg(sender) || !subscribers.Spam && $.isSub(sender, event.getTags())) {
+                if (!regulars.Spam && $.isReg(sender) || !subscribers.Spam && $.isSubv3(sender, event.getTags())) {
                     return;
                 }
 
@@ -512,7 +512,7 @@
 
             // Long msg filter
             if (longMessageToggle && messageLength >= longMessageLimit) {
-                if (!regulars.LongMsg && $.isReg(sender) || !subscribers.LongMsg && $.isSub(sender, event.getTags())) {
+                if (!regulars.LongMsg && $.isReg(sender) || !subscribers.LongMsg && $.isSubv3(sender, event.getTags())) {
                     return;
                 }
 
@@ -523,7 +523,7 @@
 
             // Fake purge filter
             if (fakePurgeToggle && $.patternDetector.getFakePurge(event)) {
-                if (!regulars.FakePurge && $.isReg(sender) || !subscribers.FakePurge && $.isSub(sender, event.getTags())) {
+                if (!regulars.FakePurge && $.isReg(sender) || !subscribers.FakePurge && $.isSubv3(sender, event.getTags())) {
                     return;
                 }
 
@@ -534,7 +534,7 @@
 
             // Emotes folter
             if (emotesToggle && $.patternDetector.getEmotesCount(event) >= emotesLimit) {
-                if (!regulars.Emotes && $.isReg(sender) || !subscribers.Emotes && $.isSub(sender, event.getTags())) {
+                if (!regulars.Emotes && $.isReg(sender) || !subscribers.Emotes && $.isSubv3(sender, event.getTags())) {
                     return;
                 }
 
@@ -546,7 +546,7 @@
             // Caps filter
             if (capsToggle && messageLength >= capsTriggerLength) {
                 if ((($.patternDetector.getNumberOfCaps(event) / messageLength) * 100) >= capsLimitPercent) {
-                    if (!regulars.Caps && $.isReg(sender) || !subscribers.Caps && $.isSub(sender, event.getTags())) {
+                    if (!regulars.Caps && $.isReg(sender) || !subscribers.Caps && $.isSubv3(sender, event.getTags())) {
                         return;
                     }
 
@@ -558,7 +558,7 @@
 
             // Color filter
             if (colorsToggle && $.patternDetector.getColoredMessage(event)) {
-                if (!regulars.Colors && $.isReg(sender) || !subscribers.Colors && $.isSub(sender, event.getTags())) {
+                if (!regulars.Colors && $.isReg(sender) || !subscribers.Colors && $.isSubv3(sender, event.getTags())) {
                     return;
                 }
 
@@ -569,7 +569,7 @@
 
             // Spam tracker
             if (spamTrackerToggle) {
-                if (!regulars.SpamTracker && $.isReg(sender) || !subscribers.SpamTracker && $.isSub(sender, event.getTags())) {
+                if (!regulars.SpamTracker && $.isReg(sender) || !subscribers.SpamTracker && $.isSubv3(sender, event.getTags())) {
                     return;
                 }
 

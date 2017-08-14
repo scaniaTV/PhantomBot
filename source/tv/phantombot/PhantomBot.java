@@ -1124,7 +1124,7 @@ public final class PhantomBot implements Listener {
 
         /* Gonna need a way to pass this to all channels */
         if (PhantomBot.getSession(this.channelName) != null) {
-            PhantomBot.getSession(this.channelName).setAllowSendMessages(false);
+            PhantomBot.getSession(this.channelName).kill();
         }
 
         /* Shutdown all caches */
