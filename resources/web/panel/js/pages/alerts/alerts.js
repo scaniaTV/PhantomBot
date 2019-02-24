@@ -591,13 +591,13 @@ $(function() {
     // StreamLabs settings.
     $('#donationHandlerSettings').on('click', function() {
         socket.getDBValues('alerts_get_streamlabs_settings', {
-            tables: ['donations', 'donations', 'donations', 'donations'],
-            keys: ['announce', 'reward', 'message', 'donationGroupMin']
+            tables: ['donations', 'donations', 'donations', 'donations', 'donations'],
+            keys: ['announce', 'reward', 'message', 'donationGroup', 'donationGroupMin']
         }, true, function(e) {
             helpers.getModal('streamlabs-alert', 'StreamLabs Alert Settings', 'Save', $('<form/>', {
                 'role': 'form'
             })
-            /// Add the toggle for streamlabs alerts.
+            // Add the toggle for streamlabs alerts.
             .append(helpers.getDropdownGroup('streamlabs-toggle', 'Enable StreamLabs Alerts', (e.announce === 'true' ? 'Yes' : 'No'), ['Yes', 'No'],
                 'If StreamLabs tips should be posted in the chat.'))
             // Add the the text area for the tip message.
@@ -605,12 +605,16 @@ $(function() {
                 'Message posted in the channel when someone tips with StreamLabs. Tags: (name), (amount), (points), (reward), (pointname), (currency), and (message)'))
             // Add the the box for the tip reward
             .append(helpers.getInputGroup('streamlabs-reward', 'number', 'Tip Reward Multiplier', '', e.reward, 'Reward multiplier for the reward.'))
+            // Add the toggle for streamlabs promotion.
+            .append(helpers.getDropdownGroup('streamlabs-promotion-toggle', 'Enable Promotion Reward', (e.donationGroup === 'true' ? 'Yes' : 'No'), ['Yes', 'No'],
+                'If StreamLabs tipers should be promoted to Donator rank.'))
             // Add the the box for the tip reward
             .append(helpers.getInputGroup('streamlabs-promotion', 'number', 'Tip Promotion Reward', '', e.donationGroupMin, 'Reward donator with a role.')),
             function() { // Callback once the user clicks save.
                 let tipToggle = $('#streamlabs-toggle').find(':selected').text() === 'Yes',
                     tipMessage = $('#streamlabs-message'),
                     tipReward = $('#streamlabs-reward'),
+                    tipPromotionToggle = $('#streamlabs-promotion-toggle').find(':selected').text() === 'Yes',
                     tipPromotion = $('#streamlabs-promotion');
 
                 // Make sure the user has someone in each box.
@@ -621,9 +625,9 @@ $(function() {
                         break;
                     default:
                         socket.updateDBValues('alerts_update_streamlabs_settings', {
-                            tables: ['donations', 'donations', 'donations', 'donations'],
-                            keys: ['announce', 'reward', 'message', 'donationGroupMin'],
-                            values: [tipToggle, tipReward.val(), tipMessage.val(), tipPromotion.val()]
+                            tables: ['donations', 'donations', 'donations', 'donations', 'donations'],
+                            keys: ['announce', 'reward', 'message', 'donationGroup', 'donationGroupMin'],
+                            values: [tipToggle, tipReward.val(), tipMessage.val(), tipPromotionToggle, tipPromotion.val()]
                         }, function() {
                             socket.sendCommand('alerts_update_streamlabs_settings_cmd', 'donationpanelupdate', function() {
                                 // Close the modal.
@@ -640,8 +644,8 @@ $(function() {
     // TipeeeStream settings.
     $('#tipeeeStreamHandlerSettings').on('click', function() {
         socket.getDBValues('alerts_get_tipeeestream_settings', {
-            tables: ['tipeeeStreamHandler', 'tipeeeStreamHandler', 'tipeeeStreamHandler', 'tipeeeStreamHandler'],
-            keys: ['toggle', 'reward', 'message', 'groupMin']
+            tables: ['tipeeeStreamHandler', 'tipeeeStreamHandler', 'tipeeeStreamHandler', 'tipeeeStreamHandler', 'tipeeeStreamHandler'],
+            keys: ['toggle', 'reward', 'message', 'group', 'groupMin']
         }, true, function(e) {
             helpers.getModal('tipeeestream-alert', 'TipeeeStream Alert Settings', 'Save', $('<form/>', {
                 'role': 'form'
@@ -654,12 +658,16 @@ $(function() {
                 'Message posted in the channel when someone tips with TipeeeStream. Tags: (name), (amount), (reward), (formattedamount), and (message)'))
             // Add the the box for the tip reward
             .append(helpers.getInputGroup('tipeeestream-reward', 'number', 'Tip Reward Multiplier', '', e.reward, 'Reward multiplier for the reward.'))
+            // Add the toggle for tipeeestream promotion.
+            .append(helpers.getDropdownGroup('tipeeestream-promotion-toggle', 'Enable Promotion Reward', (e.group === 'true' ? 'Yes' : 'No'), ['Yes', 'No'],
+                'If TipeeeStream tipers should be promoted to Donator rank.'))
             // Add the the box for the tip reward
             .append(helpers.getInputGroup('tipeeestream-promotion', 'number', 'Tip Promotion Reward', '', e.groupMin, 'Reward donator with a role.')),
             function() { // Callback once the user clicks save.
                 let tipToggle = $('#tipeeestream-toggle').find(':selected').text() === 'Yes',
                     tipMessage = $('#tipeeestream-message'),
                     tipReward = $('#tipeeestream-reward'),
+                    tipPromotionToggle = $('#tipeeestream-promotion-toggle').find(':selected').text() === 'Yes',
                     tipPromotion = $('#tipeeestream-promotion');
 
                 // Make sure the user has someone in each box.
@@ -670,9 +678,9 @@ $(function() {
                         break;
                     default:
                         socket.updateDBValues('alerts_update_tipeeestream_settings', {
-                            tables: ['tipeeeStreamHandler', 'tipeeeStreamHandler', 'tipeeeStreamHandler', 'tipeeeStreamHandler'],
-                            keys: ['toggle', 'reward', 'message', 'groupMin'],
-                            values: [tipToggle, tipReward.val(), tipMessage.val(), tipPromotion.val()]
+                            tables: ['tipeeeStreamHandler', 'tipeeeStreamHandler', 'tipeeeStreamHandler', 'tipeeeStreamHandler', 'tipeeeStreamHandler'],
+                            keys: ['toggle', 'reward', 'message', 'group', 'groupMin'],
+                            values: [tipToggle, tipReward.val(), tipMessage.val(), tipPromotionToggle, tipPromotion.val()]
                         }, function() {
                             socket.sendCommand('alerts_update_tipeeestream_settings_cmd', 'tipeeestreamreload', function() {
                                 // Close the modal.
@@ -689,8 +697,8 @@ $(function() {
     // StreamElements settings.
     $('#streamElementsHandlerSettings').on('click', function() {
         socket.getDBValues('alerts_get_streamelements_settings', {
-            tables: ['streamElementsHandler', 'streamElementsHandler', 'streamElementsHandler', 'streamElementsHandler'],
-            keys: ['toggle', 'reward', 'message', 'groupMin']
+            tables: ['streamElementsHandler', 'streamElementsHandler', 'streamElementsHandler', 'streamElementsHandler', 'streamElementsHandler'],
+            keys: ['toggle', 'reward', 'message', 'group', 'groupMin']
         }, true, function(e) {
             helpers.getModal('streamelements-alert', 'StreamElements Alert Settings', 'Save', $('<form/>', {
                 'role': 'form'
@@ -703,12 +711,16 @@ $(function() {
                 'Message posted in the channel when someone tips with StreamElements. Tags: (name), (amount), (reward), (currency), and (message)'))
             // Add the the box for the tip reward
             .append(helpers.getInputGroup('streamelements-reward', 'number', 'Tip Reward Multiplier', '', e.reward, 'Reward multiplier for the reward.'))
+            // Add the toggle for streamelements promotion.
+            .append(helpers.getDropdownGroup('streamelements-promotion-toggle', 'Enable Promotion Reward', (e.group === 'true' ? 'Yes' : 'No'), ['Yes', 'No'],
+                'If StreamElements tipers should be promoted to Donator rank.'))
             // Add the the box for the tip reward
             .append(helpers.getInputGroup('streamelements-promotion', 'number', 'Tip Promotion Reward', '', e.groupMin, 'Reward donator with a role.')),
             function() { // Callback once the user clicks save.
                 let tipToggle = $('#streamelements-toggle').find(':selected').text() === 'Yes',
                     tipMessage = $('#streamelements-message'),
                     tipReward = $('#streamelements-reward'),
+                    tipPromotionToggle = $('#streamelements-promotion-toggle').find(':selected').text() === 'Yes',
                     tipPromotion = $('#streamelements-promotion');
 
                 // Make sure the user has someone in each box.
@@ -719,9 +731,9 @@ $(function() {
                         break;
                     default:
                         socket.updateDBValues('alerts_update_streamelements_settings', {
-                            tables: ['streamElementsHandler', 'streamElementsHandler', 'streamElementsHandler', 'streamElementsHandler'],
-                            keys: ['toggle', 'reward', 'message', 'groupMin'],
-                            values: [tipToggle, tipReward.val(), tipMessage.val(), tipPromotion.val()]
+                            tables: ['streamElementsHandler', 'streamElementsHandler', 'streamElementsHandler', 'streamElementsHandler', 'streamElementsHandler'],
+                            keys: ['toggle', 'reward', 'message', 'group', 'groupMin'],
+                            values: [tipToggle, tipReward.val(), tipMessage.val(), tipPromotionToggle, tipPromotion.val()]
                         }, function() {
                             socket.sendCommand('alerts_update_streamelements_settings_cmd', 'streamelementsreload', function() {
                                 // Close the modal.
